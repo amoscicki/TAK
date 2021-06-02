@@ -177,15 +177,15 @@ public class Haskell {
 
     public static String lambdaParsuj(String polecenie, TreeMap<String, String> args,
             TreeMap<String, String> lambdaArgs) {
-
+        /*
         System.out.println(
-
+        
                 "<---\nfunkcja \t" + "\n" + "polecenie \t" + polecenie + "\n" + "args \t" + args.keySet() + " "
                         + args.values() + "\n" + "lambdaArgs \t" + lambdaArgs.keySet() + " " + lambdaArgs.values()
                         + "\n--->"
-
+        
         );
-
+        */
         if (indeksyNawiasow(polecenie)[0] == 0 && indeksyNawiasow(polecenie)[1] == polecenie.length() - 1)
             polecenie = polecenie.substring(1, polecenie.length() - 1);
 
@@ -197,8 +197,8 @@ public class Haskell {
         }
 
         //zanim to trzeba posprawdzac czy funkcja sie zaczyna od tego!
-        polecenie = polecenie.substring(0, polecenie.indexOf("\\"))
-                + polecenie.substring(polecenie.indexOf("->") + 2).trim();
+        polecenie = polecenie.substring(polecenie.indexOf("->") + 2).trim();
+
         if (polecenie.indexOf("\\") > -1) {
             for (int j = 0; j < lambdaIleArg(polecenie); j++) {
                 lambdaArgs.put(
@@ -209,7 +209,7 @@ public class Haskell {
             polecenie = lambdaParsuj(polecenie, args, lambdaArgs);
         }
 
-        System.out.println(polecenie);
+        //System.out.println(polecenie);
 
         List<String> polList = new ArrayList<String>(
                 Arrays.asList(polecenie.replace("[", "  ").replace("]", "  ").split("  ")));
@@ -222,7 +222,7 @@ public class Haskell {
         polecenie = polList.stream().collect(Collectors.joining(" "));
         polList = new ArrayList<String>(Arrays.asList(polecenie.split(":")));
 
-        System.out.println(polList);
+        //System.out.println(polList);
 
         for (int i = polList.size() - 1; i >= 0; i--) {
             ArrayList<String> argsList = lambdaHoldery(polList.get(i));
@@ -323,9 +323,9 @@ public class Haskell {
     public static String parsuj(String str, String[] strArr) {
 
         str = str.trim();
-        System.out.println("krok [\t" + ++krok + "\t] parsuje \t" + str);
-        int krokCache = krok;
-        System.out.println(Arrays.toString(strArr));
+        //System.out.println("krok [\t" + ++krok + "\t] parsuje \t" + str);
+        //int krokCache = krok;
+        //System.out.println(Arrays.toString(strArr));
         int[] indeksyNawiasow = indeksyNawiasow(str);
 
         ArrayList<String> lambdaHoldery = lambdaHoldery(str);
@@ -346,7 +346,7 @@ public class Haskell {
         for (int i = 0; i < slowaPolecenia.length; i++) {
             String s = slowaPolecenia[i].toString();
 
-            System.out.println("\t\t\t\t\t\t" + s);
+            //System.out.println("\t\t\t\t\t\t" + s);
 
             String[] newStrArr = new String[slowaPolecenia.length - (i + 1)];
             System.arraycopy(slowaPolecenia, i + 1, newStrArr, 0, slowaPolecenia.length - (i + 1));
@@ -428,84 +428,7 @@ public class Haskell {
 
                 }
 
-                // System.out.println(lambdaParsuj(polecenie, args, lambdaArgs));
                 str = str.replace(target, lambdaParsuj(polecenie, args, lambdaArgs));
-
-                //str.substring(str.indexOf("\\") + 1, str.indexOf("->")).trim().split(" ").length;
-                /*
-                
-                if (hmPolecenia.get(s) != null) {
-                String[] wartosciArg = new String[lambdaIleArg(hmPolecenia.get(s))];
-                String target = s;
-                for (int j = 0, k = 0; j < wartosciArg.length; j++) {
-                try {
-                    wartosciArg[j] = slowaPolecenia[i + j + 1];
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    if (strArr.length - 1 < k)
-                        wartosciArg[j] = "{arg}";
-                    else {
-                        wartosciArg[j] = strArr[k];
-                        newStrArr = new String[strArr.length - 1];
-                        System.arraycopy(strArr, k + 1, newStrArr, 0, newStrArr.length);
-                        strArr = newStrArr;
-                        System.out.println(Arrays.toString(strArr));
-                        k++;
-                    }
-                }
-                target += " " + wartosciArg[j];
-                
-                }
-                i += wartosciArg.length - 1;
-                str = str.replace(target, parsuj(lambdaParsuj(hmPolecenia.get(s), wartosciArg), strArr));
-                } else // tu oprocz lambda abstrakcji mamy rowniez "normalne" argumenty funkcji jesli wystepuja overloady moga nastapic dodatkowe komplikacje
-                {
-                
-                Map<String, String> funkcje = hmPolecenia.entrySet().stream()
-                    .filter(entry -> entry.getKey().startsWith(s))
-                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-                
-                for (Map.Entry<String, String> entry : funkcje.entrySet()) {
-                
-                String[] deklaracjaFunkcji = entry.getKey().split(" ");
-                
-                boolean jestLiczba = true;
-                int iloscArgumentow = deklaracjaFunkcji.length;
-                String value = entry.getValue();
-                
-                String[] wartosciArg = new String[lambdaIleArg(value)];
-                
-                String target = deklaracjaFunkcji[0];
-                for (int j = 1; j < iloscArgumentow; j++) {
-                    jestLiczba = jestLiczba(deklaracjaFunkcji[j]);
-                    if (!jestLiczba) {
-                        value = zamienArgumenty(value, deklaracjaFunkcji[j], slowaPolecenia[j]);
-                        target += " " + slowaPolecenia[j];
-                    }
-                }
-                
-                for (int j = 0, k = 0; j < wartosciArg.length; j++) {
-                    try {
-                        wartosciArg[j] = slowaPolecenia[i + j + iloscArgumentow];
-                    } catch (ArrayIndexOutOfBoundsException e) {
-                        if (/*strArr.length - 1 < ktrue)
-                            wartosciArg[j] = "{arg}";
-                        else {
-                            wartosciArg[j] = strArr[k];
-                            newStrArr = new String[strArr.length - 1];
-                            System.arraycopy(strArr, k + 1, newStrArr, 0, newStrArr.length);
-                            strArr = newStrArr;
-                            System.out.println(Arrays.toString(strArr));
-                            k++;
-                        }
-                    }
-                }
-                i += iloscArgumentow - 1;
-                if (!jestLiczba)
-                    str = str.replace(target, parsuj(lambdaParsuj(value, wartosciArg), strArr));
-                }
-                }
-                
-                */
 
             } else if (hmPolecenia.get(s) != null) {
                 str = zamienArgumenty(str, s, parsuj(hmPolecenia.get(s)));
@@ -551,7 +474,7 @@ public class Haskell {
             str = parsuj(subStr, strArr) + str.substring(subStr.length());
         }
 
-        System.out.println("[[[\t " + krokCache + "\t]]]");
+        //System.out.println("[[[\t " + krokCache + "\t]]]");
 
         if (tylkoLiczbyIInfixy(str)) {
 
